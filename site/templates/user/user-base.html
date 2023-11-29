@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block media %}
+    {% block user_media %}{% endblock %}
+
+    <style>
+        .user-gravatar {
+            display: block;
+            padding-right: 15px;
+            width: 215px;
+        }
+
+        .user-gravatar img {
+            width: 215px;
+            height: 215px;
+            display: block;
+            border-radius: 6px;
+        }
+
+        .page-title {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+        }
+    </style>
+{% endblock %}
+
+{% block js_media %}
+    {% block user_js_media %}{% endblock %}
+{% endblock %}
+
+{% block body %}
+    <div class="user-info-page">
+        <div class="user-sidebar">
+            <div class="user-gravatar">
+                <img src="{{ gravatar(user, 215) }}" width="215px" height="215px">
+            </div>
+            <br>
+
+            <div>
+                <h2 style="padding:2px 0px;">{{user.user.get_full_name()}}</h2>
+                <h4 style="padding:2px 0px; font-weight: normal"><span>{{user.username}}</span></h4>
+                <h4 style="display: flex; align-items: center; padding:2px 0px;">{{user.country.name}} <img style="margin-left: 5px; height:18px" src="{{user.country.flag}}"/></h4>
+            </div>
+
+            <br>
+
+            <div><b>
+                {%- trans trimmed counter=user.problem_count %}
+                    {{ counter }} problem solved
+                {% pluralize %}
+                    {{ counter }} problems solved
+                {% endtrans -%}
+            </b></div>
+
+            {% if not user.is_unlisted %}
+                <div><b class="semibold">{{ _('Rank by points:') }}</b> #{{ rank }}</div>
+            {% endif %}
+            <div>
+                <b class="semibold">{{ _('Total points:') }}</b>
+                <span title="{{ user.performance_points|floatformat(2) }}">
+                    {{ user.performance_points|floatformat(0) }}
+                </span>
+            </div>
+
+            <br>
+            <style>
+                .badges-amount {
+                    display:flex;
+                    flex-direction: column;
+                }
+                .badges-amount img {
+                    height: 25px;
+                    width: 25px;
+                    padding: 1px 0px;
+                }
+                .badges-amount div {
+                    display: flex;
+                    align-items: center;
+                }
+            </style>
+
+            <div class="badges-amount">
+                <b class="semibold" style="margin-bottom:5px;">{{ _('Badges:') }}</b>
+                <div><span style="margin-right: 5px;">{{ badges.bronze }}</span><img src="{{ static('icons/bronze-basic.png') }}"><small style="margin-left: 5px;"><b>Bronze</b></small></div>
+                <div><span style="margin-right: 5px;">{{ badges.silver }}</span><img src="{{ static('icons/silver-basic.png') }}"><small style="margin-left: 5px;"><b>Silver</b></small></div>
+                <div><span style="margin-right: 5px;">{{ badges.gold }}</span><img src="{{ static('icons/gold-basic.png') }}"><small style="margin-left: 5px;"><b>Gold</b></small></div>
+                <div><span style="margin-right: 5px;">{{ badges.platinum }}</span><img src="{{ static('icons/platinum-basic.png') }}"><small style="margin-left: 5px;"><b>Platinum</b></small></div>
+            </div>
+
+            <br>
+            <div>
+                <a href="{{ url('all_user_submissions', user.user.username) }}">{{ _('View submissions') }}</a>
+            </div>
+
+            {% if ratings %}
+                <br>
+                <div><b>{{ ratings|length }} contests written</b></div>
+                {% if not user.is_unlisted %}
+                    <div><b class="semibold">{{ _('Rank by rating:') }}</b> #{{ rating_rank }}</div>
+                {% endif %}
+                <div><b class="semibold">{{ _('Rating:') }}</b> {{ rating_number(rating) }}</div>
+                <div><b class="semibold">{{ _('Volatility:') }}</b> {{ rating.volatility }}</div>
+                <div><b class="semibold">{{ _('Min. rating:') }}</b> {{ rating_number(min_rating) }}</div>
+                <div><b class="semibold">{{ _('Max rating:') }}</b> {{ rating_number(max_rating) }}</div>
+            {% endif %}
+        </div>
+        <div class="user-content">{% block user_content %}{% endblock %}</div>
+    </div>
+{% endblock %}

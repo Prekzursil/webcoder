@@ -1,0 +1,11 @@
+<div id="hints" class="tab-content" style="display:none">
+
+    <h2><i style="padding-right: 0.3em" class="fa fa-asterisk"></i>{{ _('Hints') }}</h2>
+
+        {% if hints %}
+            {{ hints|markdown("problem", MATH_ENGINE)|reference|str|safe }}
+        {% else %}
+            {{_('No hints were posted for this problem.')}}
+        {% endif %}
+
+</div>

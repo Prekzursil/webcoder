@@ -1,0 +1,45 @@
+{% set can_view = submission_layout(submission, profile_id, request.user, completed_problem_ids, editable_problem_ids, tester_problem_ids) %}
+<td class="user-col">
+    <a href="{{ url('problem_detail', submission.problem.code) }}">
+        <h4>{{submission.problem.name}}</h4>
+        <small>{{submission.problem.get_difficulty_display()}}</small>
+    </a>
+</td>
+<td class="user-col">
+    <a href="{{ url('user_page', submission.user.username) }}">
+        <div><b>{{submission.user.user.get_full_name()}}</b>
+        <small>{{submission.user}}</small></div>
+        <small>{{ relative_time(submission.date) }}</small>
+    </a>
+</td>
+<td class="align-center"><img style="height:15px" src="{{submission.user.country.flag}}" data-toggle="tooltip" data-placement="top" title="{{submission.user.country.name}}" /></td>
+<td class="align-center"><a style="color: black" href="/problems/?language={{submission.language.id}}">{{ submission.language }}</a></td>
+<td class="align-center">
+    {{ (submission.memory_bytes|filesizeformat(True)).replace('i', '') }}
+</td>
+<td class="align-center">
+    {{ (submission.time or 0)|floatformat(2) }}s
+</td>
+<td class="status-col align-right {{ submission.result_class }}">
+    <b>{{submission.case_points}} / {{submission.case_total}}</b>
+    <small>{{ submission.long_status }}</small>
+</td>
+<td class="action-col align-right">
+
+    {% if can_view %}
+            <a href="{{ url('submission_status', submission.id) }}" data-toggle="tooltip" data-placement="top" title="{{ _('View') }}">
+                <i class="fa fa-eye fa-fw"></i>
+            </a>
+            {% if perms.judge.rejudge_submission %}
+            <a href="#" onclick="rejudge_submission({{ submission.id }}, event);return false" data-toggle="tooltip" data-placement="top" title="{{ _('Rejudge') }}">
+                <i class="fa fa-refresh fa-fw"></i>
+            </a>
+            {% endif %}
+            {% if perms.judge.change_submission %}
+            <a href="{{ url('admin:judge_submission_change', submission.id) }}" data-toggle="tooltip" data-placement="top" title="{{ _('Admin') }}">
+                <i class="fa fa-cog fa-fw"></i>
+            </a>
+            {% endif %}
+    {% endif %}
+
+</td>

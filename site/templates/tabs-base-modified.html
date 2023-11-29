@@ -1,0 +1,25 @@
+{% macro make_tab(name, fa, url, text, type) %}
+    <li class="tab{% if type == 'active' %} active{% endif %}" id="{{name}}-tab" onclick="changeTab('{{name}}')" style="cursor:pointer">
+        {%- if url %}<a href="{{ url }}">{% else %}<span>{% endif -%}
+        <i class="tab-icon fa {{ fa }}"></i> {{ text }}
+        {%- if url %}</a>{% else %}</span>{% endif -%}
+    </li>
+{% endmacro %}
+
+<style>
+
+    .tabs {
+        margin: 0px;
+        border: none;
+    }
+
+</style>
+
+<div class="page-title">
+    <div class="tabs">
+        {% block post_tab_spacer %}{% endblock %}
+        <ul>
+            {% block tabs %}{% endblock %}
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,45 @@
+<div id="problem" class="tab-content" style="display:block">
+
+    <h2><i style="padding-right: 0.3em" class="fa fa-align-justify"></i>{{ _('Statement') }}</h2>
+
+    {% block description %}
+        {% cache 86400 'problem_html' problem.id MATH_ENGINE LANGUAGE_CODE %}
+            {{ description|markdown("problem", MATH_ENGINE)|reference|str|safe }}
+        {% endcache %}
+
+        {% with license=problem.license %}
+            {% if license %}
+                <span class="license">
+                <a href="{{ url('license', license.key) }}">{{ license.display or license.name }}</a>
+            </span>
+            {% endif %}
+        {% endwith %}
+    {% endblock %}
+
+    {% if contest_problem and contest_problem.contest.use_clarifications %}
+        <div class="clarifications-area">
+            <h2><i class="fa fa-question-circle"></i> {{ _('Clarifications') }}</h2>
+            {% if has_clarifications %}
+                {% for clarification in clarifications %}
+                    <div class="problem-clarification">
+                        <div class="time">{{ relative_time(clarification.date) }}</div>
+                        <span class="body">
+                            {{ clarification.description|markdown('problem', MATH_ENGINE)|reference }}
+                        </span>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-comments-message">{{ _('No clarifications have been made at this time.') }}</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <h2 style="margin-top: 50px;"><i class="fa fa-terminal"></i> {{ _('Submit Solution') }}</h2>
+
+    {% if request.user.is_authenticated %}
+        {% include 'problem/submit-modified.html' %}
+    {% else %}
+        <div>{{ _('Please log in to submit a solution') }}</div>
+    {% endif %}
+
+</div>

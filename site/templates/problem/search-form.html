@@ -1,0 +1,131 @@
+<div class="sidebox">
+    <h3>{{ _('Filter Problems') }} <i style="color: black" class="fa fa-filter"></i>
+    </h3>
+    <div class="sidebox-content">
+        <form id="filter-form" name="form" action="" method="get">
+            <div>
+                <input id="search" type="text" name="search" value="{{ search_query or '' }}"
+                       placeholder="{{ _('Search problems...') }}">
+            </div>
+            {% if has_fts %}
+                <div>
+                    <input id="full_text" type="checkbox" name="full_text" value="1"
+                           {% if full_text %}checked{% endif %}>
+                    <label for="full_text">{{ _('Full text search') }}</label>
+                </div>
+            {% endif %}
+                <div>
+                    <input id="contests" type="checkbox" name="contests" value="1"
+                       {% if contests %}checked{% endif %}>
+                    <label>{{ _('Only contest problems') }}</label>
+                </div>
+            {% if request.user.is_authenticated %}
+                <div class="problems-solution">
+                    <span class="filter-title">{{ _('Status') }}</span>
+                    <div class="solutions">
+                        <input id="solved" type="checkbox" name="solved" value="1"
+                           {% if solved %}checked{% endif %}>
+                        <label for="solved">{{ _('Solved') }}</label>
+                    </div>
+                    <div class="solutions">
+                        <input id="unsolved" type="checkbox" name="unsolved" value="1"
+                           {% if unsolved %}checked{% endif %}>
+                        <label for="unsolved">{{ _('Unsolved') }}</label>
+                    </div>
+                </div>
+            {% endif %}
+                <div class="problems-difficulty">
+                        <span class="filter-title">{{ _('Difficulty') }}</span>
+                        <div class="difficulties">
+                            <input id="easy" type="checkbox" name="easy" value="1"
+                               {% if easy %}checked{% endif %}>
+                            <label>{{ _('Easy') }}</label>
+                        </div>
+                        <div class="difficulties">
+                            <input id="medium" type="checkbox" name="medium" value="1"
+                               {% if medium %}checked{% endif %}>
+                            <label>{{ _('Medium') }}</label>
+                        </div>
+                        <div class="difficulties">
+                            <input id="hard" type="checkbox" name="hard" value="1"
+                               {% if hard %}checked{% endif %}>
+                            <label>{{ _('Hard') }}</label>
+                        </div>
+                </div>
+<!--            <div>-->
+<!--                <input id="show_types" type="checkbox" name="show_types" value="1"-->
+<!--                        {% if show_types %} checked{% endif %}>-->
+<!--                <label for="show_types">{{ _('Show problem types') }}</label>-->
+<!--            </div>-->
+            <div class="filter-form-group">
+                <label class="filter-title" style="padding:10px 0px;" for="category"><i>{{ _('Category') }}</i></label>
+                <select id="category" name="category">
+                    {% if category %}
+                        <option value="" selected="selected">{{ _('All') }}</option>
+                    {% else %}
+                        <option value="">{{ _('All') }}</option>{% endif %}
+                    {% for group in categories %}
+                        {% if not group.parent %}
+                            {% if group.get_subgroups_count() > 0 %}
+                                <option value="{{ group.id }}"{% if group.id == category %} selected{% endif %}>
+                                    {{ group.full_name }}
+                                </option>
+                                {% for subgroup in categories %}
+                                    {% if subgroup.parent == group %}
+                                    <option value="{{ subgroup.id }}"{% if subgroup.id == category %} selected{% endif %}>
+                                        {{ group.full_name }} > {{ subgroup.full_name }}
+                                    </option>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <option value="{{ group.id }}"{% if group.id == category %} selected{% endif %}>
+                                    {{ group.full_name }}
+                                </option>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-form-group">
+                <label class="filter-title" style="padding:10px 0px;" for="category"><i>{{ _('Language') }}</i></label>
+                <select id="language" name="language">
+                    {% if language %}
+                        <option value="" selected="selected">{{ _('All') }}</option>
+                    {% else %}
+                        <option value="">{{ _('All') }}</option>{% endif %}
+                    {% for lang in languages %}
+                        {% if lang.get_problem_count() > 0 %}
+                            <option value="{{ lang.id }}"{% if lang.id == language %} selected{% endif %}>
+                                {{ lang.name }}
+                            </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            {% if show_types %}
+                <div class="filter-form-group">
+                    <label class="filter-title" style="padding:10px 0px;" for="type"><i>{{ _('Tags') }}</i></label>
+                    <select id="types" name="type" multiple>
+                        {% for type in problem_types %}
+                            <option value="{{ type.id }}"{% if type.id in selected_types %} selected{% endif %}>
+                                {{ type.full_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
+<!--            {% if point_values %}-->
+<!--                <div class="form-label">{{ _('Point range') }}</div>-->
+<!--                <div id="point-slider"></div>-->
+<!--            {% endif %}-->
+<!--            <input id="point-start" type="hidden" name="point_start" {% if point_start and point_start != point_values.min %}value="{{ point_start }}"{% else %}disabled{% endif %}>-->
+<!--            <input id="point-end" type="hidden" name="point_end" {% if point_end and point_end != point_values.max %}value="{{ point_end }}"{% else %}disabled{% endif %}>-->
+            <div class="form-submit-group">
+                <a id="go" class="button">{{ _('Go') }}</a>
+                <a id="random" class="button">{{ _('Random') }}</a>
+            </div>
+        </form>
+    </div>
+</div>

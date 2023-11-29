@@ -1,0 +1,9 @@
+archive: testcases_16.zip
+checker: standard
+test_cases:
+- in: testcase.1.in
+  out: testcase.1.out
+  points: 30
+- in: testcase.2.in
+  out: testcase.2.out
+  points: 70

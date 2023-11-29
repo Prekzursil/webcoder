@@ -1,0 +1,19 @@
+{% extends "tabs-base-modified.html" %}
+
+{% block tabs %}
+
+        {{ make_tab('problem', 'fa-align-justify', '', _('Problem'), 'active') }}
+        {{ make_tab('discussions', 'fa-comments', '', _('Discussions'), '') }}
+
+    {% if perms.judge.edit_all_problem or perms.judge.edit_public_problem or perms.judge.edit_own_problem or (request.user.is_authenticated and has_submissions) %}
+        {{ make_tab('hints', 'fa-asterisk', '', _('Hints'), '') }}
+    {% endif %}
+
+    {% if perms.judge.edit_all_problem or perms.judge.edit_public_problem or perms.judge.edit_own_problem or (request.user.is_authenticated and has_max_score) %}
+        {{ make_tab('testcases', 'fa-flask', '', _('Test Cases'), '') }}
+        {{ make_tab('source', 'fa-code', '', _('Official Source'), '') }}
+    {% endif %}
+
+    {{ make_tab('submissions', 'fa-files-o', '', _('Submissions'), '') }}
+
+{% endblock %}

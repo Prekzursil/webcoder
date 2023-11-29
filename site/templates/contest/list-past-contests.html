@@ -1,0 +1,102 @@
+{% extends "base_without_container.html" %}
+
+{% block body %}
+
+    <style>
+
+        .year {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .year h1 {
+            font-size: 46px;
+        }
+        .problems-list {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .problem {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.15);
+            margin: 30px;
+            height: 250px;
+            width: 350px;
+        }
+        .problem-header {
+            background: #d4ead8;
+            display: flex;
+            text-align: center;
+            word-break: break-word;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 150px;
+        }
+        .problem-header h3 {
+            margin-bottom: 10px;
+        }
+        .problem-body {
+            display: flex;
+            flex-direction: column;
+            height: 100px;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        .view-button {
+            background: #27AE60;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            text-decoration: none;
+            padding: 10px 5px;
+            margin-top: 5px;
+            border-radius: 5px;
+            width: 150px;
+            max-width: 150px;
+        }
+        .view-button:hover {
+            background: #16944a;
+            color: white;
+        }
+
+    </style>
+
+    <div class="container">
+
+        {% for year in years %}
+            <div class="year">
+                <h1>{{year}}</h1>
+                <div class="problems-list">
+                    {% for contest in past_contests %}
+                        {% if contest.year == year %}
+                            <div class="problem">
+                                <div class="problem-header">
+                                    <h3>{{contest.name}}</h3>
+                                    <a class="view-button" href="/problems/?past_contest={{contest.id}}">
+                                        {{ _('View Contest') }}
+                                    </a>
+                                </div>
+                                <div class="problem-body">
+                                    <span><b>{{ _('Level: ') }}</b>{{contest.get_level_display()}}</span>
+                                    <span><b>{{ _('Difficulty: ') }}</b>{{contest.get_difficulty_display()}}</span>
+                                    <span style="margin-top: 10px; color: #27AE60">{{ contest.past_contest_problems.distinct().count() }} {{ _('Problems Available') }}</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+
+{% endblock %}

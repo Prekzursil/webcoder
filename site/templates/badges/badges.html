@@ -1,0 +1,98 @@
+{% extends "base_without_container.html" %}
+
+{% block body %}
+
+<style>
+
+    .badges-list {
+        display: flex;
+        flex-direction: column;
+    }
+    .badge-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        background: white;
+        padding: 30px;
+        margin: 0 30px;
+        border-bottom: 1px solid #ccc;
+        box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.15);
+        align-items: center;
+    }
+    .badge-item:hover {
+        background: #efefef;
+    }
+    .badge-item img {
+        height: 120px;
+        opacity: 0.50;
+    }
+    .badge-item.active img {
+        opacity: 1.00;
+    }
+    .badge-content {
+        display: flex;
+        flex-direction: column;
+        margin-left: 20px;
+    }
+    .badge-content span {
+        font-size: 16px;
+    }
+    .badge-status {
+        display:flex;
+        flex-direction: column;
+        align-items: flex-end;
+        font-size: 16px;
+    }
+
+</style>
+
+<div class="badges-list">
+
+    {% for badge in badges %}
+        {% if request.user.is_authenticated %}
+            <div class="badge-item {% if badge in request.user.badges.all() %}active{% endif %}">
+        {% else %}
+            <div class="badge-item">
+        {% endif %}
+        <div style="display: flex; align-items: center">
+            {% if badge.level == '1' %}
+                <img src="{{ static('icons/bronze.png') }}">
+            {% elif badge.level == '2' %}
+                <img src="{{ static('icons/silver.png') }}">
+            {% elif badge.level == '3' %}
+                <img src="{{ static('icons/gold.png') }}">
+            {% elif badge.level == '4' %}
+                <img src="{{ static('icons/platinum.png') }}">
+            {% endif %}
+            <div class="badge-content">
+                <h2>{{badge.title}}</h2>
+                {% if badge.level == '1' %}
+                    <span>{{ _('Bronze') }}</span>
+                {% elif badge.level == '2' %}
+                    <span>{{ _('Silver') }}</span>
+                {% elif badge.level == '3' %}
+                    <span>{{ _('Gold') }}</span>
+                {% elif badge.level == '4' %}
+                    <span>{{ _('Platinum') }}</span>
+                {% endif %}
+                <span style="margin-top: 10px;">{{badge.description}}</span>
+            </div>
+        </div>
+        <div class="badge-status">
+            {% if request.user.is_authenticated %}
+                {% if badge in request.user.badges.all() %}
+                    <h4 style="margin-top: 35px; color: #27AE60" class=""><b>{{ _('Badge Unlocked') }}</b> <i class="fa fa-check-circle"></i></h4>
+                    <span style="margin-top: 10px;">{{ badge.user.count() }} {{ _('users conquered this badge') }}</span>
+                {% else %}
+                    <span style="margin-top: 65px;">{{ badge.user.count() }} {{ _('users conquered this badge') }}</span>
+                {% endif %}
+            {% else %}
+                <span style="margin-top: 65px;">{{ badge.user.count() }} {{ _('users conquered this badge') }}</span>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

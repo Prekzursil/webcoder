@@ -1,0 +1,5 @@
+archive: testcases.zip
+test_cases:
+- in: testcase.1.in
+  out: testcase.1.out
+  points: 100

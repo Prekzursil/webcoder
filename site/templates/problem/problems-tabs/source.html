@@ -1,0 +1,11 @@
+<div id="source" class="tab-content" style="display:none">
+
+    <h2><i style="padding-right: 0.3em" class="fa fa-code"></i>{{ _('Official Source') }}</h2>
+
+    {% if solution %}
+        {{ solution.content|markdown("solution", MATH_ENGINE)|reference|str|safe }}
+    {% else %}
+        {{_('No official source is available for this problem yet.')}}
+    {% endif %}
+
+</div>

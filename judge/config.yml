@@ -1,0 +1,30 @@
+id: TestJudge
+key: '07J^|h2!j~fHOnTdENd-G_0AwY~ns[)`kDW#>U<tZ1%=s}FT2wKOr[<F%`*[IBL?aMj.)(48tk]ob!}Uz82*&U$upBd+4}3l,wBF'
+problem_storage_root:
+  - /root/app/judge/problems/
+runtime:
+  as_x64: /usr/bin/x86_64-linux-gnu-as
+  as_x86: /usr/bin/as
+  awk: /usr/bin/gawk
+  cat: /bin/cat
+  fpc: /usr/bin/fpc
+  g++: /usr/bin/g++
+  g++11: /usr/bin/g++
+  g++14: /usr/bin/g++
+  g++17: /usr/bin/g++-7
+  g++20: /usr/bin/g++-10
+  gcc: /usr/bin/gcc
+  gcc11: /usr/bin/gcc
+  java8: /usr/lib/jvm/java-8-openjdk-amd64/bin/java
+  javac8: /usr/lib/jvm/java-8-openjdk-amd64/bin/javac
+  ld_x64: /usr/bin/x86_64-linux-gnu-ld
+  ld_x86: /usr/bin/ld
+  mono: /usr/bin/mono
+  mono-csc: /usr/bin/mono-csc
+  perl: /usr/bin/perl
+  php: /usr/bin/php
+  pypy: /usr/bin/pypy
+  pypy3: /usr/bin/pypy3
+  python: /usr/bin/python2.7
+  python3: /usr/bin/python3.6
+  sed: /bin/sed

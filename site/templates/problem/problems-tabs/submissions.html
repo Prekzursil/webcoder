@@ -1,0 +1,95 @@
+<div id="submissions" class="tab-content" style="display:none">
+
+    <h2><i style="padding-right: 0.3em" class="fa fa-files-o"></i>{{ _('Submissions') }}</h2>
+
+    {% if submissions %}
+
+        <div class="simple-submission-filter">
+            <span id="all-selected" class="filter-option selected" style="padding-left: 0px" onclick="filterSubmission()">{{ _('All Submissions') }}</span>
+            <span id="mine-selected" class="filter-option" onclick="filterSubmission(1)">{{ _('My Submissions') }}</span>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <div>
+                        <th>{{ _('User') }}</th>
+                        <th class="align-center">{{ _('Country') }}</th>
+                        <th class="align-center">{{ _('Language') }}</th>
+                        <th class="align-center">{{ _('Resource Used') }}</th>
+                        <th class="align-right">{{ _('Score') }}</th>
+                        <th class="align-right"></th>
+                    </div>
+                </tr>
+            </thead>
+            <tbody>
+
+            {% set profile_id = request.profile.id if request.user.is_authenticated else 0 %}
+            {% for submission in submissions %}
+                    {% set can_view = submission_layout(submission, profile_id, request.user, completed_problem_ids, editable_problem_ids, tester_problem_ids) %}
+                    <tr class="submission-entry {% if request.user.is_authenticated and request.user==submission.user.user %}own-submission{% endif %}">
+                        <td class="user-col">
+                            <a href="{{ url('user_page', submission.user.username) }}">
+                                <div><b>{{submission.user.user.get_full_name()}}</b>
+                                <small>{{submission.user}}</small></div>
+                                <small>{{ relative_time(submission.date) }}</small>
+                            </a>
+                        </td>
+                        <td class="align-center"><img style="height:15px" src="{{submission.user.country.flag}}" data-toggle="tooltip" data-placement="top" title="{{submission.user.country.name}}" /></td>
+                        <td class="align-center"><a style="color: black" href="/problems/?language={{submission.language.id}}">{{ submission.language }}</a></td>
+                        <td class="align-center">
+                            {{ (submission.memory_bytes|filesizeformat(True)).replace('i', '') }} |
+                            {{ (submission.time or 0)|floatformat(2) }}s
+                        </td>
+                        <td class="status-col align-right {{ submission.result_class }}">
+                            <b>{{submission.case_points}} / {{submission.case_total}}</b>
+                            <small>{{ submission.long_status }}</small>
+                        </td>
+                        <td class="action-col align-right">
+
+                            {% if can_view %}
+                                    <a href="{{ url('submission_status', submission.id) }}" data-toggle="tooltip" data-placement="top" title="{{ _('View') }}">
+                                        <i class="fa fa-eye fa-fw"></i>
+                                    </a>
+                                    {% if perms.judge.rejudge_submission %}
+                                    <a href="#" onclick="rejudge_submission({{ submission.id }}, event);return false" data-toggle="tooltip" data-placement="top" title="{{ _('Rejudge') }}">
+                                        <i class="fa fa-refresh fa-fw"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if perms.judge.change_submission %}
+                                    <a href="{{ url('admin:judge_submission_change', submission.id) }}" data-toggle="tooltip" data-placement="top" title="{{ _('Admin') }}">
+                                        <i class="fa fa-cog fa-fw"></i>
+                                    </a>
+                                    {% endif %}
+                            {% endif %}
+
+                        </td>
+                    </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <script>
+
+            function filterSubmission(filter) {
+                if (filter) {
+                    $('.submission-entry').css('display', 'none');
+                    $('.submission-entry.own-submission').css('display', 'table-row');
+                    $('#all-selected').removeClass('selected');
+                    $('#mine-selected').addClass('selected');
+                } else {
+                    $('.submission-entry').css('display', 'table-row');
+                    $('#mine-selected').removeClass('selected');
+                    $('#all-selected').addClass('selected');
+                }
+            }
+
+        </script>
+
+    {% else %}
+        {{_('No submissions posted so far.')}}
+    {% endif %}
+
+
+
+</div>

@@ -1,0 +1,67 @@
+sudo: required
+dist: bionic
+services:
+  - docker
+language: minimal
+addons:
+  apt:
+    packages:
+      - jq
+jobs:
+  include:
+    - env: DMOJ_USE_SECCOMP="yes" PYTHON_VERSION=3.6 ARCH=amd64 DOCKER_IMAGE=dmoj/runtimes-tier3
+    - env: DMOJ_USE_SECCOMP="yes" PYTHON_VERSION=3.7 ARCH=amd64 DOCKER_IMAGE=dmoj/runtimes-tier3
+    - env: DMOJ_USE_SECCOMP="yes" PYTHON_VERSION=3.8 ARCH=amd64 DOCKER_IMAGE=dmoj/runtimes-tier3
+    - env: DMOJ_USE_SECCOMP="yes" PYTHON_VERSION=3.8 ARCH=aarch64 DOCKER_IMAGE=dmoj/runtimes-tier1
+      arch: arm64
+    - env: DMOJ_USE_SECCOMP="no"  PYTHON_VERSION=3.8 ARCH=amd64 DOCKER_IMAGE=dmoj/runtimes-tier3
+install:
+  - docker pull "$DOCKER_IMAGE"
+  - |
+    if [ "$PYTHON_VERSION" != 3.8 ]; then
+      curl -L "https://github.com/DMOJ/runtimes-python/releases/latest/download/python$PYTHON_VERSION-$ARCH.tar.gz" |
+        tar -xz
+    fi
+  - >
+    git clone --depth 25 \
+              --single-branch \
+              --branch ${DMOJ_JUDGE_TESTSUITE_BRANCH:-master} \
+              https://github.com/${DMOJ_JUDGE_TESTSUITE_SLUG:-DMOJ/judge-testsuite} testsuite &&
+    git -C testsuite reset --hard ${DMOJ_JUDGE_TESTSUITE_COMMIT_SHA:-HEAD}
+script:
+  - |
+    cat > run <<'EOF'
+    #!/bin/bash -e
+    export PYTHONUNBUFFERED=1
+    export LANG=C.UTF-8
+    export PYTHONIOENCODING=utf8
+    cd /code
+    if [ "$PYTHON_VERSION" != 3.8 ]; then
+      PYTHON="/code/python$PYTHON_VERSION/bin/python$PYTHON_VERSION"
+      "$PYTHON" -m pip install --upgrade pip
+      "$PYTHON" -m pip install cython coverage
+    else
+      PYTHON=/usr/bin/python3.8
+      pip3 install coverage
+    fi
+    "$PYTHON" -m pip install -e .[test]
+    chmod o+w .
+    export PYTHON
+    runuser -u judge -w PATH /code/run-su
+    EOF
+  - |
+    cat > run-su <<'EOF'
+    #!/bin/bash -e
+    . ~/.profile
+    cd /code
+    "$PYTHON" -m coverage run --source=dmoj -m unittest discover dmoj/tests/
+    "$PYTHON" -m coverage run --append --source=dmoj .docker.test.py
+    EOF
+  - chmod a+x run run-su
+  - docker run -e PYTHON_VERSION="$PYTHON_VERSION" -e DMOJ_USE_SECCOMP="$DMOJ_USE_SECCOMP" -v "$(pwd):/code" --cap-add=SYS_PTRACE "$DOCKER_IMAGE"
+after_script:
+  - sed -i 's:"/code/:"'"$(pwd)"'/:g' .coverage
+  - sudo pip install codecov && codecov
+notifications:
+  slack:
+    secure: "cJMFsXwvAZxSR/p8WFYUAtJmPxnq+MZKhXQgaHZp7D0tveh6v0/O/GDfO+3B3Ep7/SBNiAj/wfH/ivDVjiSWVN/2DYSiHtzMZ9Jkq2CQzMzX5u3l7J04bO617K8+eRGOFQcYj+GPRntF4GebSgfMuhXwba2N/KjAA9QMKOTlJpU="
