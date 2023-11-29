@@ -1,11 +1,11 @@
 [submodule "site/resources/pagedown"]
 	path = site/resources/pagedown
 	url = https://github.com/DMOJ/dmoj-pagedown.git
-	branch = master
+	branch = main
 [submodule "site/resourcers/libs"]
 	path = site/resourcers/libs
 	url = https://github.com/DMOJ/site-assets.git
-	branch = master
+	branch = main
 [submodule "site/resources/libs"]
 	path = site/resources/libs
 	url = https://github.com/DMOJ/site-assets.git
